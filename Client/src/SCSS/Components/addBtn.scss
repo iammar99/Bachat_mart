@@ -1,0 +1,31 @@
+/* Converted from Uiverse.io by catraco - using #d6e2f5 color scheme */
+.cssbuttons-io-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .2em;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 16px;
+  padding: .5em 1.5em;
+  color: #2c3e50; /* Dark text for better contrast on light background */
+  background: linear-gradient(0deg, #b8cce8, #d6e2f5); /* Light blue gradient */
+  border-bottom: 3px solid #9fb5d3; /* Darker shade for border */
+  border: none;
+  outline: none;
+  box-shadow: 0 .5em .5em -.4em rgb(0, 0, 0, .3); /* Lighter shadow */
+  letter-spacing: 0.08em;
+  border-radius: 20em;
+  cursor: pointer;
+  transition: .5s;
+}
+
+.cssbuttons-io-button:hover {
+  filter: brightness(1.1); /* Slightly less brightness change */
+  color: rgb(0, 0, 0, .7); /* Darker text on hover */
+}
+
+.cssbuttons-io-button:active {
+  transition: 0s;
+  transform: rotate(-10deg);
+}

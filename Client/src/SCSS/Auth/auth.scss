@@ -1,0 +1,79 @@
+form.auth-form {
+    width: 60%;
+    background: white;
+    margin: auto;
+    padding: 30px 50px;
+    border-radius: 10px;
+}
+
+main.form-body {
+    display: flex;
+    background-color: $primaryColor;
+    flex-direction: column;
+}
+
+button.form-btn {
+    background: #333f4c;
+    color: white;
+    border: 0;
+    width: 100px;
+    height: 40px;
+    position: relative;
+    z-index: 1;
+}
+
+button.form-btn:before {
+    content: "";
+    width: 0%;
+    height: 40px;
+    background: $accent;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: all 0.7s ease;
+    z-index: -1;
+}
+
+button.form-btn:hover::before {
+    width: 100%;
+}
+
+
+
+/* Links */
+
+form a {
+    text-decoration: none;
+    color: $secondaryColor;
+    position: relative;
+    font-size: 15px;
+}
+
+
+form a::after {
+    content: "";
+    width: 0%;
+    height: 2px;
+    background-color: $secondaryColor;
+    position: absolute;
+    display: block;
+    transition: all 0.5s ease;
+}
+
+form a:hover:after {
+    width: 100%;
+}
+
+
+@media screen and (max-width:900px) {
+    form {
+    width: 70%;
+    }
+}
+
+
+@media screen and (max-width:500px) {
+    form {
+    width: 90%;
+    }
+}

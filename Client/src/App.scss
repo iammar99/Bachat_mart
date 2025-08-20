@@ -1,0 +1,39 @@
+// -------------- Colors --------------
+    $primaryColor:#e2e8f0;
+    $secondaryColor:#6c7c8f;
+    $accent:#84a3b8;
+    $text:#44607a;
+// -------------- Components --------------
+@import './SCSS/Components/bootstrap';
+@import './SCSS/Components/ScreenLoader';
+@import './SCSS/Components/footer.scss';
+@import './SCSS/Components/header.scss';
+@import './SCSS/Components/productLoader.scss';
+@import './SCSS/Components/addBtn.scss';
+@import './SCSS/Components/productsCard.scss';
+@import './SCSS/Components/invoiceGenerator.scss';
+// -------------- Auth --------------
+@import './SCSS/Auth/auth.scss';
+// -------------- Dashboard --------------
+@import "./SCSS/Dashboard/cart.scss";
+@import "./SCSS/Dashboard/checkout.scss";
+@import "./SCSS/Dashboard/admin.scss";
+@import "./SCSS/Dashboard/profile.scss";
+@import "./SCSS/Dashboard/adminView.scss";
+// -------------- Frontend --------------
+@import "./SCSS/Frontend/home.scss";
+
+#root{
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+
+main{
+    flex: 1 0 auto;
+}
+
+li{
+    list-style: none;
+}

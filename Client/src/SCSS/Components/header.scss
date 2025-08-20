@@ -1,0 +1,48 @@
+header{
+    background-color: $primaryColor;
+}
+
+
+a.nav-link {
+    color: $secondaryColor;
+    position: relative;
+    padding: 0;
+}
+
+a.nav-link:before {
+    content: "";
+    position: absolute;
+    width: 0%;
+    height: 2px;
+    background: black;
+    bottom: 0;
+    left: 0;
+    transition: all 0.5s ease;
+}
+
+a.nav-link:hover:before {
+    width: 100%;
+}
+
+
+.bottom-nav {
+    height: 450px;
+    width: 100%;
+    background-image: url(../../Assets/heroImg.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    position: relative;
+    background-position: center center; /* Keeps the image centered */
+}
+
+// .bottom-nav::before {
+//     content: '';
+//     position: absolute;
+//     top: 0;
+//     left: 0;
+//     right: 0;
+//     bottom: 0;
+//     background: rgba(0, 0, 0, 0.3); 
+//     z-index: 1;
+// }

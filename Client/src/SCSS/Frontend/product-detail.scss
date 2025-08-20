@@ -1,0 +1,24 @@
+button.add-to-cart {
+    background: var(--button-bg, );  
+    color: white;
+    border: 0;
+    position: relative;
+    z-index: 1;
+    padding: 10px 25px;
+}
+
+button.add-to-cart:before {
+    content: "";
+    width: 0%;
+    height: 45.5px;
+    background: var(--accent-color);  
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: all 0.7s ease;
+    z-index: -1;
+}
+
+button.add-to-cart:hover::before {
+    width: 100%;
+}
