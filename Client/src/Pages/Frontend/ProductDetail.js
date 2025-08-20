@@ -90,10 +90,10 @@ export default function ProductDetail() {
                                         <h1>Discounted Price</h1>
                                         <div className="d-flex justify-content-start align-items-center">
                                             <div className="product-detail-old-price" style={{ textDecoration: "line-through", color: "#837171", fontWeight: "500" }}>
-                                                ${productDetail.oldPrice}
+                                                Rs. {productDetail.oldPrice}
                                             </div>
                                             <div className="ms-3 product-detail-price" style={{ color: "#717171", fontWeight: "600", fontSize: "19px" }}>
-                                                ${productDetail.price}
+                                                Rs. {productDetail.price}
                                             </div>
                                         </div>
                                     </>

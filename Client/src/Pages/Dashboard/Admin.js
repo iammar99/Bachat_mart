@@ -38,8 +38,9 @@ const Admin = () => {
         const formData = new FormData();
         try {
             const { name, img, category, oldPrice, price, bg, panelBg, description } = product
-            if (!name || !img || !category || !price || !bg || !panelBg || description) {
+            if (!name || !img || !category || !price || !bg || !panelBg || !description) {
                 message.error("Please Fill all inputs")
+                console.log(product)
                 return
             }
 
@@ -183,7 +184,7 @@ const Admin = () => {
                                             onChange={handleChange}
                                             onInput={autoResize}
                                         />
-                                        <label htmlFor="floatingTextarea">Comments</label>
+                                        <label htmlFor="floatingTextarea">Description</label>
                                     </div>
                                     <div className="input-group">
                                         <label htmlFor="productImage" className="input-label">

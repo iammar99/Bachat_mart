@@ -90,13 +90,13 @@ export default function ProductCard(props) {
                     <div className="product-category" style={{ color: getContrastingTextColor(props.panelBg) }}>
                         {props.category.toUpperCase()} Wear
                     </div>
-                    <div className="prices d-flex justify-content-between w-50">
+                    <div className="prices d-flex justify-content-between " style={{"width":" 100px"}}>
                         <div className="product-price">
-                            ${props.price}
+                            Rs. {props.price}
                         </div>
                         <div className="old-price ms-3" style={{ "textDecoration": "line-through" }}>
                             {
-                                props.oldPrice ? "$" + props.oldPrice : ""
+                                props.oldPrice ? "Rs. " + props.oldPrice : ""
                             }
                         </div>
                     </div>

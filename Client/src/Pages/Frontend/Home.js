@@ -88,7 +88,7 @@ export default function Home() {
             </div>
           ))}
         </div>
-        <Link to={`/all-products`} className="home-btn">
+        <Link to={`/all-product`} className="home-btn">
           View All Products
         </Link>
       </div>
