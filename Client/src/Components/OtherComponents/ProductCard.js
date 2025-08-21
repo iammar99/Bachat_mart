@@ -15,6 +15,7 @@ export default function ProductCard(props) {
     // ------------------ Check cart ------------------
 
     const [isAdded, setIsAdded] = useState(false)
+    const [isMenu, setIsMenu] = useState(false)
 
     useEffect(() => {
         const existsInCart = cart.some((prod) => (prod.id === props.id || prod._id === props.id));
@@ -38,7 +39,8 @@ export default function ProductCard(props) {
         return luminance > 0.5 ? 'black' : 'white';
     }
 
-    const handleCart = async (product,e) => {
+
+    const handleCart = async (product, e) => {
         e.stopPropagation()
         if (!isAuth) {
             message.warning("You are not Logged in")
@@ -76,10 +78,32 @@ export default function ProductCard(props) {
         navigate("/products-detail")
     }
 
+    const handleMenu = (e) => {
+        e.stopPropagation()
+        setIsMenu(!isMenu)
+
+    }
+
 
     return (
-        <div className='product-card my-5'  onClick={() => { handleDetail(props) }}>
-            <div className="img-container" style={{ backgroundColor: props.bg }}>
+        <div className='product-card my-5' onClick={() => { handleDetail(props) }}>
+            <div className="img-container" style={{ backgroundColor: props.bg, "position": "relative" }}>
+                {/* {
+                    user.role === "admin"
+                        ?
+                        <span >
+                            <i className='fa-solid fa-ellipsis-vertical' onClick={handleMenu} style={{ "color": "black", "position": "absolute", "top": "15px", "right": "15px" }}></i>
+                            <div className={`product-menu d-${isMenu ? "block" : "none"}`}>
+                                <i className="fa-solid fa-xmark" onClick={handleMenu} style={{ "position": "absolute", "left": "8px", "top": "11px" }}></i>
+                                <div className="menu-item" onClick={() => { props.handleEdit(props.id) }}>
+                                    <i className="fa-solid fa-pen-to-square"></i>
+                                    <span>Edit</span>
+                                </div>
+                            </div>
+                        </span>
+                        :
+                        <></>
+                } */}
                 <img src={props.img} alt="" style={{ "width": "200px" }} className="product-img d-block mx-auto" />
             </div>
             <div className="product-info px-3 py-2 d-flex justify-content-between align-items-center" style={{ backgroundColor: props.panelBg }}>
@@ -88,9 +112,9 @@ export default function ProductCard(props) {
                         {props.name}
                     </div>
                     <div className="product-category" style={{ color: getContrastingTextColor(props.panelBg) }}>
-                        {props.category.toUpperCase()} Wear
+                        {props.category.toUpperCase()} Product
                     </div>
-                    <div className="prices d-flex justify-content-between " style={{"width":" 100px"}}>
+                    <div className="prices d-flex justify-content-between " style={{ "width": " 100px" }}>
                         <div className="product-price">
                             Rs. {props.price}
                         </div>
@@ -106,7 +130,7 @@ export default function ProductCard(props) {
                         ?
                         <></>
                         :
-                        <button className="cart-btn" onClick={(e) => { handleCart(props,e) }}>
+                        <button className="cart-btn" onClick={(e) => { handleCart(props, e) }}>
                             <i className="fa-solid fa-plus"></i>
                         </button>
                 }

@@ -12,7 +12,7 @@ export default function AllProducts() {
     const fetchData = async () => {
         setIsLoading(true)
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/product/viewProducts/men`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/product/viewProducts/`, {
                 method: "GET",
             })
             const result = await response.json()

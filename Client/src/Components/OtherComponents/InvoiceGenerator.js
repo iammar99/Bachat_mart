@@ -57,7 +57,7 @@ export const generateInvoice = async (order) => {
 
         // Save the PDF
         const orderId = String(order._id || Date.now()).slice(-8);
-        pdf.save(`LuxeFits-Invoice-${orderId}.pdf`);
+        pdf.save(`BachatMart-Invoice-${orderId}.pdf`);
         message.success('Invoice downloaded successfully!');
 
     } catch (error) {

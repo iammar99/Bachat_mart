@@ -10,7 +10,7 @@ import { Link, useNavigate } from 'react-router-dom';
 export default function Checkout() {
 
 
-    const { profile, setProfile , fetchData } = useProfileContext()
+    const { profile, setProfile, fetchData } = useProfileContext()
 
     const { cart, setCart } = useCartContext();
     const { user } = useAuthContext();
@@ -157,51 +157,51 @@ export default function Checkout() {
         return true;
     };
 
-const handlePlaceOrder = async () => {
-    if (!validateForm()) return;
-    if (!validatePayment()) return;
+    const handlePlaceOrder = async () => {
+        if (!validateForm()) return;
+        if (!validatePayment()) return;
 
-    setIsProcessing(true);
-    try {
-        const orderData = {
-            userId: user.id,
-            items: cart.map((prod) => {
-                return { id: prod._id, quantity: prod.quantity || 1 };
-            }),
-            shippingInfo,
-            paymentInfo,
-            billingInfo: billingInfo.sameAsShipping ? shippingInfo : billingInfo,
-            subtotal: calculateTotal(),
-            tax: calculateTax(),
-            total: calculateFinalTotal(),
-        };
+        setIsProcessing(true);
+        try {
+            const orderData = {
+                userId: user.id,
+                items: cart.map((prod) => {
+                    return { id: prod._id, quantity: prod.quantity || 1 };
+                }),
+                shippingInfo,
+                paymentInfo,
+                billingInfo: billingInfo.sameAsShipping ? shippingInfo : billingInfo,
+                subtotal: calculateTotal(),
+                tax: calculateTax(),
+                total: calculateFinalTotal(),
+            };
 
 
-        const response = await fetch('${process.env.REACT_APP_API_URL}/user/orders/create', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-            body: JSON.stringify(orderData),
-        });
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/user/orders/create`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify(orderData),
+            });
 
-        const result = await response.json();
+            const result = await response.json();
 
-        if (result.success) {
-            message.success('Order placed successfully!');
-            setCart([]);
-            fetchData(); 
-            navigate('/dashboard/profile');
-        } else {
-            message.error(result.message || 'Failed to place order');
+            if (result.success) {
+                message.success('Order placed successfully!');
+                setCart([]);
+                fetchData(user.id);
+                navigate('/dashboard/profile');
+            } else {
+                message.error(result.message || 'Failed to place order');
+            }
+        } catch (error) {
+            message.error('Something went wrong. Please try again.');
+        } finally {
+            setIsProcessing(false);
         }
-    } catch (error) {
-        message.error('Something went wrong. Please try again.');
-    } finally {
-        setIsProcessing(false);
-    }
-};
+    };
 
     useEffect(() => {
         if (cart.length === 0) {
@@ -382,21 +382,21 @@ const handlePlaceOrder = async () => {
                                         <div className="item-name">{product.name}</div>
                                         <div className="item-quantity">Qty: {product.quantity || 1}</div>
                                     </div>
-                                    <div className="item-price">${(product.price * (product.quantity || 1)).toFixed(2)}</div>
+                                    <div className="item-price">Rs.{(product.price * (product.quantity || 1)).toFixed(2)}</div>
                                 </div>
                             ))}
                         </div>
                         <div className="summary-row">
                             <span>Subtotal ({cart.length} items)</span>
-                            <span>${calculateTotal()}</span>
+                            <span>Rs.{calculateTotal()}</span>
                         </div>
                         <div className="summary-row">
                             <span>Tax</span>
-                            <span>${calculateTax()}</span>
+                            <span>Rs.{calculateTax()}</span>
                         </div>
                         <div className="summary-row total-row">
                             <span>Total</span>
-                            <span>${calculateFinalTotal()}</span>
+                            <span>Rs.{calculateFinalTotal()}</span>
                         </div>
                         <button onClick={handlePlaceOrder} className="btn btn-primary" disabled={isProcessing}>
                             {isProcessing ? 'Processing...' : 'Place Order'}

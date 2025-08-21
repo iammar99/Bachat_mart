@@ -36,7 +36,7 @@ export default function Cart() {
     const removeFromCart = async (index) => {
         const updatedCart = cart.filter((prod) => prod._id !== index)
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/prodcut/cart/${user.id}/remove/${index}`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/product/cart/${user.id}/remove/${index}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json"
@@ -47,7 +47,8 @@ export default function Cart() {
             setCart(updatedCart)
             message.success("Item removed from cart")
         } catch (error) {
-            message.success("Something went wrong")
+            console.log(error)
+            message.error("Something went wrong")
         }
     }
 
@@ -135,7 +136,7 @@ export default function Cart() {
                                                 <h3 className="product-name">{product.name}</h3>
                                                 <div className="product-price">
                                                     <span className="price-label">Unit Price:</span>
-                                                    <span className="price-value">${product.price}</span>
+                                                    <span className="price-value">Rs.{product.price}</span>
                                                 </div>
                                             </div>
 
@@ -163,7 +164,7 @@ export default function Cart() {
                                             <div className="item-total">
                                                 <span className="total-label">Total</span>
                                                 <span className="total-price">
-                                                    ${calculateItemTotal(product.price, product.quantity)}
+                                                    Rs.{calculateItemTotal(product.price, product.quantity)}
                                                 </span>
                                             </div>
 
@@ -186,7 +187,7 @@ export default function Cart() {
 
                                         <div className="summary-row">
                                             <span>Subtotal ({cart.length} items)</span>
-                                            <span>${calculateTotal()}</span>
+                                            <span>Rs.{calculateTotal()}</span>
                                         </div>
 
                                         <div className="summary-row">
@@ -203,7 +204,7 @@ export default function Cart() {
 
                                         <div className="summary-row total-row">
                                             <span>Total</span>
-                                            <span className="total-amount">${calculateTotal()}</span>
+                                            <span className="total-amount">Rs.{calculateTotal()}</span>
                                         </div>
 
                                         <Link to={"/dashboard/checkout"} className="checkout-btn" onClick={handleCheckOut}>

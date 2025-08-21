@@ -9,7 +9,7 @@ import { useProfileContext } from 'Context/ProfileContext';
 export default function AccountPage() {
     const [activeTab, setActiveTab] = useState('profile');
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const { profile, setProfile } = useProfileContext()
+    const { profile, setProfile  ,fetchData } = useProfileContext()
     // State for handling password form
     const [isForm, setIsForm] = useState(false)
     const [updatePasswordState, setUpdatePasswordState] = useState({})
@@ -131,60 +131,83 @@ export default function AccountPage() {
             handleLogout();
             return;
         }
+        // fetchData(user.id)
         setActiveTab(tabId);
         setSidebarOpen(false);
     };
 
-    const renderProfileContent = () => (
-        <div className="profile-content">
-            <div className="profile-header">
-                <div className="profile-avatar" style={{ "position": "relative" }}>
-                    <img src={profileImg || userImg} style={{ "width": "-webkit-fill-available" }} alt="" />
-                    <label htmlFor="profile">
-                        <i className="fa-solid fa-pencil" style={{ "cursor": "pointer", "fontSize": "16px", "position": "absolute", "right": "0", "top": "5px" }} ></i>
-                    </label>
-                    <input type="file" name="profile" id="profile" className='d-none' onChange={handleImg} />
-                </div>
-                <div className="profile-info">
-                    <h2>{profile.username}</h2>
-                    <p>Member since November 2023</p>
-                </div>
-                {/* <button className="edit-profile-btn">
+    const renderProfileContent = () => {
+        const getTimePassed = (dateString) => {
+            try {
+                const givenDate = new Date(dateString);
+                const currentDate = new Date();
+
+                const timeDifference = currentDate - givenDate;
+
+                const months = Math.floor(timeDifference / (1000 * 60 * 60 * 24 * 30));
+                const years = Math.floor(months / 12);
+
+                const options = { year: 'numeric', month: 'long' };
+                const formattedDate = new Intl.DateTimeFormat('en-US', options).format(givenDate);
+
+                return formattedDate;
+            } catch (error) {
+                console.log(error)
+            }
+        }
+
+
+        return (
+            <div className="profile-content">
+                <div className="profile-header">
+                    <div className="profile-avatar" style={{ "position": "relative" }}>
+                        <img src={profileImg || userImg} style={{ "width": "-webkit-fill-available" }} alt="" />
+                        <label htmlFor="profile">
+                            <i className="fa-solid fa-pencil" style={{ "cursor": "pointer", "fontSize": "16px", "position": "absolute", "right": "0", "top": "5px" }} ></i>
+                        </label>
+                        <input type="file" name="profile" id="profile" className='d-none' onChange={handleImg} />
+                    </div>
+                    <div className="profile-info">
+                        <h2>{profile.username}</h2>
+                        <p>Member since {getTimePassed(profile.createdAt)}</p>
+                    </div>
+                    {/* <button className="edit-profile-btn">
                     <i className="fas fa-edit"></i>
                     <span>Edit Profile</span>
                 </button> */}
-            </div>
+                </div>
 
-            <div className="profile-form">
-                <div className="form-section">
-                    <h3>Personal Information</h3>
-                    <div className="form-grid">
-                        <div className="form-group">
-                            <label>First Name</label>
-                            <input type="text" onChange={handleProfileChange} name="firstName" defaultValue={profile.firstName} />
-                        </div>
-                        <div className="form-group">
-                            <label>Last Name</label>
-                            <input type="text" onChange={handleProfileChange} name="lastName" defaultValue={profile.lastName} />
-                        </div>
-                        <div className="form-group">
-                            <label>Email Address</label>
-                            <input type="email" onChange={handleProfileChange} name="email" defaultValue={profile.email} />
-                        </div>
-                        <div className="form-group">
-                            <label>Phone Number</label>
-                            <input type="tel" onChange={handleProfileChange} name="contact" defaultValue={profile.contact} />
+                <div className="profile-form">
+                    <div className="form-section">
+                        <h3>Personal Information</h3>
+                        <div className="form-grid">
+                            <div className="form-group">
+                                <label>First Name</label>
+                                <input type="text" onChange={handleProfileChange} name="firstName" defaultValue={profile.firstName} />
+                            </div>
+                            <div className="form-group">
+                                <label>Last Name</label>
+                                <input type="text" onChange={handleProfileChange} name="lastName" defaultValue={profile.lastName} />
+                            </div>
+                            <div className="form-group">
+                                <label>Email Address</label>
+                                <input type="email" onChange={handleProfileChange} name="email" defaultValue={profile.email} />
+                            </div>
+                            <div className="form-group">
+                                <label>Phone Number</label>
+                                <input type="tel" onChange={handleProfileChange} name="contact" defaultValue={profile.contact} />
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div className="form-actions">
-                    <button className="save-btn" onClick={submitProfile}>Save Changes</button>
-                    {/* <button className="cancel-btn">Cancel</button> */}
+                    <div className="form-actions">
+                        <button className="save-btn" onClick={submitProfile}>Save Changes</button>
+                        {/* <button className="cancel-btn">Cancel</button> */}
+                    </div>
                 </div>
             </div>
-        </div>
-    );
+        )
+    };
 
     const renderOrdersContent = () => (
         <div className="orders-content">
@@ -245,15 +268,15 @@ export default function AccountPage() {
                                             </div>
                                             <div className="detail-row">
                                                 <span className="label">Subtotal:</span>
-                                                <span>${order.subtotal}</span>
+                                                <span>Rs.{order.subtotal}</span>
                                             </div>
                                             <div className="detail-row">
                                                 <span className="label">Tax:</span>
-                                                <span>${order.tax}</span>
+                                                <span>Rs.{order.tax}</span>
                                             </div>
                                             <div className="detail-row">
                                                 <span className="label">Total:</span>
-                                                <span className="total">${order.total}</span>
+                                                <span className="total">Rs.{order.total}</span>
                                             </div>
                                         </div>
 
@@ -278,7 +301,7 @@ export default function AccountPage() {
                                                         <div className="item-details">
                                                             <h4>{item?.name || 'Product Name'}</h4>
                                                             <p>Quantity: {orderItem.quantity}</p>
-                                                            <p>Price: ${item?.price || 'N/A'}</p>
+                                                            <p>Price: Rs.{item?.price || 'N/A'}</p>
                                                             {item?.color && <p>Color: {item.color}</p>}
                                                             {item?.size && <p>Size: {item.size}</p>}
                                                         </div>
@@ -293,12 +316,13 @@ export default function AccountPage() {
                                         {/* Invoice Header */}
                                         <div className="invoice-header">
                                             <div className="company-info">
-                                                <h1 className="company-name">LuxeFits</h1>
+                                                <h1 className="company-name">BachatMart</h1>
                                                 <div className="company-details">
-                                                    <p>123 Business Street</p>
-                                                    <p>City, State 12345</p>
-                                                    <p>Phone: (555) 123-4567</p>
-                                                    <p>Email: info@luxefits.com</p>
+                                                    {/* <p>123 Business Street</p> */}
+                                                    <p>Faisalabad , Punjab</p>
+                                                    <p>Phone: +92-3217816266
+                                                    </p>
+                                                    <p>Email: bachatmart@gmail.com</p>
                                                 </div>
                                             </div>
                                             <div className="invoice-info">
@@ -381,10 +405,10 @@ export default function AccountPage() {
                                                                     {orderItem.quantity}
                                                                 </td>
                                                                 <td className="item-price">
-                                                                    ${item?.price || '0.00'}
+                                                                    Rs.{item?.price || '0.00'}
                                                                 </td>
                                                                 <td className="item-total">
-                                                                    ${itemTotal}
+                                                                    Rs.{itemTotal}
                                                                 </td>
                                                             </tr>
                                                         );
@@ -403,7 +427,7 @@ export default function AccountPage() {
                                                                 <strong>Subtotal:</strong>
                                                             </td>
                                                             <td className="total-value">
-                                                                ${order.subtotal}
+                                                                Rs.{order.subtotal}
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -411,7 +435,7 @@ export default function AccountPage() {
                                                                 <strong>Tax:</strong>
                                                             </td>
                                                             <td className="total-value">
-                                                                ${order.tax}
+                                                                Rs.{order.tax}
                                                             </td>
                                                         </tr>
                                                         <tr className="grand-total">
@@ -419,7 +443,7 @@ export default function AccountPage() {
                                                                 TOTAL:
                                                             </td>
                                                             <td className="total-value">
-                                                                ${order.total}
+                                                                Rs.{order.total}
                                                             </td>
                                                         </tr>
                                                     </tbody>
@@ -447,7 +471,7 @@ export default function AccountPage() {
                                         <div className="invoice-footer">
                                             <p>
                                                 Thank you for your business! If you have any questions about this invoice,
-                                                please contact us at info@luxefits.com or (555) 123-4567.
+                                                please contact us at bachatmart@gmail.com or +92321-7816266.
                                             </p>
                                             <p>
                                                 <strong>Terms & Conditions:</strong> Payment is due within 30 days.
@@ -638,7 +662,7 @@ export default function AccountPage() {
                 <div className="sidebar-header">
                     <h2>My Account</h2>
                     <button
-                        className="sidebar-close"
+                        className="sidebar-close d-block d-md-none"
                         onClick={() => setSidebarOpen(false)}
                     >
                         <i className="fas fa-times"></i>

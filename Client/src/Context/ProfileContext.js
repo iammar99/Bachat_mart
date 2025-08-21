@@ -22,6 +22,7 @@ export default function ProfileContextProvider({ children }) {
             const result = await response.json()
             if(result.success){
                 setProfile(result.data)
+                console.log(result.data)
             }
             else{
                 console.error("error While loading profile")

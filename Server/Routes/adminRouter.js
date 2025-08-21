@@ -183,7 +183,9 @@ router.post("/orders/:id/status", async (req, res) => {
             success: true,
             message: "Nothing went wrong"
         })
+        // res.redirect(`/user/profile/${orderFound.userId}`);
     } catch (error) {
+        console.log(error)
         res.json({
             success: false,
             message: "Something went wrong"

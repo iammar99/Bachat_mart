@@ -16,7 +16,7 @@ export default function Home() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/product/viewProducts/${activeCategory}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/product/viewProducts/`, {
         method: "GET",
       })
       const result = await response.json()

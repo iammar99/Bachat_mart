@@ -12,17 +12,17 @@ const jwt = require("jsonwebtoken")
 
 
 
-router.get("/", async (req, res)=> {
+router.get("/", async (req, res) => {
     res.send("Hey product route is working")
 })
 
 
-// ------------------- View Product -------------------
+// ------------------- View Product --- ✔ -------------------
 
 
-router.get("/viewProducts/:category", async (req, res) => {
+router.get("/viewProducts", async (req, res) => {
     try {
-        const products = await product.find({ category: req.params.category })
+        const products = await product.find({})
         const productsWithImage = products.map(product => {
             const imgBase64 = product.img.toString('base64');
             const imgSrc = `data:image/png;base64,${imgBase64}`;
@@ -41,11 +41,32 @@ router.get("/viewProducts/:category", async (req, res) => {
             success: false,
             message: "Some Error Occured"
         })
-        console.log(error)
     }
+    // try {
+    //     const products = await product.find({ category: req.params.category })
+    //     const productsWithImage = products.map(product => {
+    //         const imgBase64 = product.img.toString('base64');
+    //         const imgSrc = `data:image/png;base64,${imgBase64}`;
+
+    //         return {
+    //             ...product._doc,
+    //             img: imgSrc,
+    //         };
+    //     });
+    //     res.json({
+    //         success: true,
+    //         data: productsWithImage
+    //     })
+    // } catch (error) {
+    //     res.json({
+    //         success: false,
+    //         message: "Some Error Occured"
+    //     })
+    //     console.log(error)
+    // }
 })
 
-// ------------------- Add to cart -------------------
+// ------------------- Add to cart --- ✔ -------------------
 
 router.post("/add-to-cart", async (req, res) => {
     try {
@@ -60,9 +81,9 @@ router.post("/add-to-cart", async (req, res) => {
             message: "Something went wrong"
         })
     }
-}) 
+})
 
-// ------------------- Get cart -------------------
+// ------------------- Get cart --- ✔ -------------------
 
 
 router.get("/cart/get/:id", async (req, res) => {
@@ -86,12 +107,13 @@ router.get("/cart/get/:id", async (req, res) => {
             message: "Something went wrong"
         })
     }
-}) 
+})
 
-// ------------------- Remove from cart -------------------
+// ------------------- Remove from cart --- ✔ -------------------
 
 
 router.get("/cart/:user/remove/:id", async (req, res) => {
+    console.log("runned")
     try {
         const userFound = await user.findById(req.params.user)
         userFound.cart.splice(userFound.cart.indexOf(req.params.id), 1);
@@ -105,7 +127,7 @@ router.get("/cart/:user/remove/:id", async (req, res) => {
             message: "Something went wrong"
         })
     }
-}) 
+})
 
 
 module.exports = router

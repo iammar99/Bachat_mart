@@ -1,4 +1,5 @@
 import { message } from 'antd';
+import { useProfileContext } from 'Context/ProfileContext';
 import React, { useEffect, useState } from 'react';
 
 export default function AdminOrdersView() {
@@ -7,6 +8,7 @@ export default function AdminOrdersView() {
     const [searchTerm, setSearchTerm] = useState('');
     const [editingOrder, setEditingOrder] = useState(null);
     const [loading, setLoading] = useState(true);
+    const { fetchData : fetchProfileData} = useProfileContext()
 
     const statusOptions = ['pending', 'processing', 'shipped', 'completed', 'cancelled'];
 
