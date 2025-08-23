@@ -66,14 +66,14 @@ form a:hover:after {
 
 
 @media screen and (max-width:900px) {
-    form {
+    form.auth-form {
     width: 70%;
     }
 }
 
 
 @media screen and (max-width:500px) {
-    form {
+    form.auth-form {
     width: 90%;
     }
 }

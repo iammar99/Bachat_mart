@@ -6,9 +6,12 @@ const product = require("../Models/productModel")
 const user = require("../Models/userModel")
 // ----------- config -----------
 const upload = require("../config/multerConfig")
+const sendEmail = require("../config/email")
 // ----------- Packages -----------
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
+const dns = require('dns');
+
 
 
 
@@ -90,6 +93,68 @@ router.post("/login", async (req, res) => {
 // ------------------- Register  --- ✔ -------------------
 
 
+
+// -------------------  Verifying Email  --- ✔ -------------------
+
+// Add this at the top to store pending users temporarily
+const pendingUsers = new Map();
+
+router.get("/verify-email/:token", async (req, res) => {
+    try {
+        console.log(req.params.token)
+
+        // Get pending user data
+        const pendingUserData = pendingUsers.get(req.params.token);
+        if (!pendingUserData) {
+            return res.json({
+                success: false,
+                message: "Invalid or expired verification link"
+            })
+        }
+
+        // Check if user already exists (safety check)
+        const existingUser = await user.findOne({ email: pendingUserData.email });
+        if (existingUser) {
+            pendingUsers.delete(req.params.token);
+            return res.json({
+                success: false,
+                message: "User already registered"
+            })
+        }
+
+        // Create user in database now
+        const userCreated = await user.create({
+            email: pendingUserData.email,
+            username: pendingUserData.username,
+            password: pendingUserData.password,
+            emailVerified: true // Add this field to your user model if not exists
+        });
+
+        // Remove from pending users
+        pendingUsers.delete(req.params.token);
+
+        // Create login token
+        const loginToken = jwt.sign({ email: userCreated.email, id: userCreated._id }, process.env.JWT_SECRET);
+        res.cookie("token", loginToken, {
+            httpOnly: true,
+            sameSite: "Lax",
+            secure: false,
+        });
+
+        res.json({
+            success: true,
+            message: "Email Verified! Registration Complete",
+            user: userCreated
+        })
+    } catch (error) {
+        console.log(error)
+        res.json({
+            success: false,
+            message: "Verification Failed"
+        })
+    }
+})
+
 router.post("/register", async (req, res) => {
     const userFound = await user.findOne({ email: req.body.email })
     if (userFound) {
@@ -103,28 +168,54 @@ router.post("/register", async (req, res) => {
         try {
             bcrypt.genSalt(10, function (err, salt) {
                 bcrypt.hash(req.body.password, salt, async function (err, hash) {
-                    const userCreated = await user.create({
+
+                    // Create verification token (different from login token)
+                    const verificationToken = jwt.sign({
                         email: req.body.email,
                         username: req.body.username,
-                        password: hash,
-                    })
-                    const token = jwt.sign({ email: userCreated.email, id: userCreated._id }, process.env.JWT_SECRET);
-                    res.cookie("token", token, {
-                        httpOnly: true,
-                        sameSite: "Lax",
-                        secure: false,
+                        timestamp: Date.now()
+                    }, process.env.JWT_SECRET, { expiresIn: '24h' });
+
+                    // Store user data temporarily (NOT in database yet)
+                    pendingUsers.set(verificationToken, {
+                        email: req.body.email,
+                        username: req.body.username,
+                        password: hash, // Store hashed password
+                        timestamp: Date.now()
                     });
-                    const imgBase64 = userCreated.profileImg.toString('base64');
-                    const imgSrc = `data:image/png;base64,${imgBase64}`;
-                    console.log(imgSrc)
-                    userCreated.profileImg = imgSrc
-                    res.json({
-                        success: true,
-                        message: "User Registered Successfully",
-                        user: userCreated,
-                        profileImg: imgSrc
-                    })
-                    console.log(userCreated)
+
+
+                    // Sending mail for verification
+                    const verificationLink = `${process.env.REACT_APP_FRONTEND_URL}/auth/verify-email/${verificationToken}`;
+                    const subject = "Email Verification Required"
+                    const text = `Hello ${req.body.username}, Please click the link below to verify your email and complete registration: ${verificationLink}. This link expires in 24 hours.`
+
+                    try {
+                        sendEmail(req.body.email, subject, text, (error, info) => {
+                            if (error) {
+                                console.log(error)
+                                // Remove from pending if email fails
+                                pendingUsers.delete(verificationToken);
+                                return res.status(500).json({
+                                    success: false,
+                                    message: 'Error sending verification email'
+                                });
+                            }
+                            console.log("Verification email sent")
+                            res.json({
+                                success: true,
+                                message: "Verification email sent! Please check your inbox to complete registration.",
+                                email: req.body.email
+                            });
+                        });
+                    } catch (error) {
+                        console.log(error)
+                        pendingUsers.delete(verificationToken);
+                        res.json({
+                            success: false,
+                            message: "Failed to send verification email"
+                        })
+                    }
                 });
             });
         } catch (error) {
@@ -136,6 +227,17 @@ router.post("/register", async (req, res) => {
         }
     }
 })
+
+setInterval(() => {
+    const now = Date.now();
+    const maxAge = 24 * 60 * 60 * 1000; 
+
+    for (const [token, userData] of pendingUsers.entries()) {
+        if (now - userData.timestamp > maxAge) {
+            pendingUsers.delete(token);
+        }
+    }
+}, 60 * 60 * 1000); 
 
 
 // ------------------- Create Order --- ✔ -------------------
@@ -341,6 +443,28 @@ router.get("/profile/:id", async (req, res) => {
         console.log("first error", error)
     }
 });
+
+
+// ------------------- Send User Email  --- ✔ -------------------
+
+router.post('/send-email', (req, res) => {
+    const { to, subject, text } = req.body;
+
+    try {
+        sendEmail(to, subject, text, (error, info) => {
+            if (error) {
+                console.log(error)
+                return res.status(500).send({ message: 'Error sending email', error }); ``
+            }
+            console.log("sent")
+            res.status(200).send({ message: 'Email sent successfully', info });
+        });
+    } catch (error) {
+        console.log(error)
+    }
+});
+
+
 
 
 module.exports = router

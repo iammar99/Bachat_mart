@@ -10,8 +10,8 @@ export default function Register() {
   // -------------- Auth Context --------------
   const { isAuth, setIsAuth, user, setUser } = useAuthContext()
   // -------------- Profile Image  Context --------------
-const { fetchData } = useProfileImageContext();
-const { fetchData: fetchProfileData } = useProfileContext();
+  const { fetchData } = useProfileImageContext();
+  const { fetchData: fetchProfileData } = useProfileContext();
 
   // -------------- State --------------
   const [state, setState] = useState({})
@@ -51,21 +51,10 @@ const { fetchData: fetchProfileData } = useProfileContext();
       const result = await response.json()
 
       if (result.success) {
-        message.success(result.message)
+        // message.success(result.message)
+        message.info("Please check your email and click the verification link to complete registration", 10) // Shows for 10 seconds
 
-        const userData = {
-          email,
-          username,
-          id: result.user._id,
-          role: result.user.role,
-          profile: result.profileImg
-        }
-        setIsAuth(true)
-        setUser(userData)
-        localStorage.setItem("token", "true")
-        localStorage.setItem("user", JSON.stringify(userData))
-        fetchData()
-        fetchProfileData(userData.id)
+        localStorage.setItem("pendingVerificationEmail", email)
 
       } else {
         message.error(result.message)
@@ -81,6 +70,86 @@ const { fetchData: fetchProfileData } = useProfileContext();
       document.getElementsByName("password")[0].value = ""
       document.getElementsByName("cPassword")[0].value = ""
       setIsLoading(false)
+    }
+  }
+
+  // Optional: Add this function to handle email verification when user clicks the email link
+  const handleEmailVerification = async (token) => {
+    try {
+      setIsLoading(true)
+
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/user/verify-email/${token}`, {
+        method: "GET",
+        credentials: "include"
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        message.success(result.message)
+
+        // NOW set the user as authenticated
+        const userData = {
+          email: result.user.email,
+          username: result.user.username,
+          id: result.user._id,
+          role: result.user.role,
+          profile: result.profileImg || null
+        }
+
+        setIsAuth(true)
+        setUser(userData)
+        localStorage.setItem("token", "true")
+        localStorage.setItem("user", JSON.stringify(userData))
+
+        // Remove pending email from storage
+        localStorage.removeItem("pendingVerificationEmail")
+
+        // Fetch user data
+        fetchData()
+        fetchProfileData(userData.id)
+
+        // Optional: Redirect to dashboard
+        // navigate("/dashboard")
+
+      } else {
+        message.error(result.message)
+      }
+    } catch (error) {
+      message.error("Verification failed. Please try again.")
+      console.error("Verification error:", error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Optional: Add resend verification email function
+  const handleResendVerification = async () => {
+    try {
+      const email = localStorage.getItem("pendingVerificationEmail")
+      if (!email) {
+        message.error("No pending verification found")
+        return
+      }
+
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/user/resend-verification`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email })
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        message.success("Verification email resent successfully!")
+      } else {
+        message.error(result.message)
+      }
+    } catch (error) {
+      message.error("Failed to resend verification email")
+      console.error("Resend error:", error)
     }
   }
 

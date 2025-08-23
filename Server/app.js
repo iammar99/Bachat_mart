@@ -16,6 +16,10 @@ const adminRouter = require("./Routes/adminRouter")
 
 
 
+
+
+
+
 // ----------- MiddleWare -----------
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -41,9 +45,9 @@ app.use(cookieParser())
 
 
 
-app.use("/user" , userRouter)
-app.use("/product" , productRouter)
-app.use("/admin/" , adminRouter)
+app.use("/user", userRouter)
+app.use("/product", productRouter)
+app.use("/admin/", adminRouter)
 
 // ----------- Get -----------
 
